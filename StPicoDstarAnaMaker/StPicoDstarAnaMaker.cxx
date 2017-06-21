@@ -263,11 +263,11 @@ for (unsigned short iTrack = 0; iTrack<nTracks; ++iTrack)
       if (kp->pt()/spMom.perp()>20 || kp->pt()/spMom.perp()<10) continue;
 
       StD0Pion* D0Pion = new StD0Pion(kp,*kaon , *pion, *trk, kp->kaonIdx(),kp->pionIdx(),iTrack,pVtx, picoDst->event()->bField());
-//     if ((D0Pion->m()-kp->m())<0.1 || (D0Pion->m()-kp->m())>0.2) continue;  
+     if ((D0Pion->m()-kp->m())<0.1 || (D0Pion->m()-kp->m())>0.2) continue;  
      bool unlikeDstar = pion->charge() * trk->charge() >0 ? true : false;
 
       //some cut condition and then add to the histogram
-  if (unlikeDstar)    mHists->addD0Pion(D0Pion, kp);
+      mHists->addD0Pion(D0Pion, kp, unlikeDstar);
       mHists->addD0SoftPion(D0Pion,kp,unlikeDstar,centrality,reweight);
       delete D0Pion;
       }//end of iTrack loop
