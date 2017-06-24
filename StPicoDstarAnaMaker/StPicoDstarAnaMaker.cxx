@@ -230,47 +230,38 @@ Int_t StPicoDstarAnaMaker::Make()
             if (!goodPair) continue;
             bool D0unlike = kaon->charge() * pion->charge() < 0 ? true : false;
             if (!D0unlike) continue;
-           
+
 
 //several judgement condition//
 //PID(not require tof match), idx^_^, charge(K+pi-pi- or K-pi+pi+), the pt of softpion, dca, pt(D0)/pt(Dstar) //
-if (!isGoodD0(kp)) continue;
-float const bField = picoDst->event()->bField();
+            if (!isGoodD0(kp)) continue;
 //add softpion loop to reconstruct Dstar//
-for (unsigned short iTrack = 0; iTrack<nTracks; ++iTrack)
-{
-      StPicoTrack* trk = picoDst->track(iTrack);
-      if (!trk) continue;
-      if (!isGoodTrack(trk, pVtx)) continue;
-      if (iTrack==kp->kaonIdx() ||
-          iTrack==kp->pionIdx())  continue;
+            for (unsigned short iTrack = 0; iTrack<nTracks; ++iTrack)
+          {
+               StPicoTrack* trk = picoDst->track(iTrack);
+               if (!trk) continue;
+      
+               if (iTrack==kp->kaonIdx() ||
+                   iTrack==kp->pionIdx())  continue;
+               if (!isGoodSoftPionTrack(trk, pVtx)) continue;
 //PID 
-      if (!isTpcPion(trk)) continue;
-      float spiBeta = getTofBeta(trk, pVtx);
-      bool spiTofAvailable = !isnan(spiBeta) && spiBeta > 0;
-      bool tofSoftPion = spiTofAvailable ? isTofPion(trk, spiBeta, pVtx) : true;//this is bybrid pid, not always require tof
-      if (!tofSoftPion) continue;
-    //  if (!isGoodSoftPion(trk)) continue;
-      StThreeVectorF spMom = trk->gMom(pVtx, picoDst->event()->bField());
-     // bool bpt = spMom.perp()<anaCuts::ptSoftPion_max && spMom.perp()>anaCuts::ptSoftPion_min;
-      bool bpt = spMom.perp()>anaCuts::ptSoftPion_min;
-      bool bnHitsFit = trk->nHitsFit()>=anaCuts::nHitsFit;
-      float spDca = float((trk->helix()).geometricSignedDistance(pVtx));
-      bool bdca =std::fabs(spDca)<=anaCuts::DcaSoftPion;
-      bool beta = std::fabs(spMom.pseudoRapidity())<=anaCuts::Eta;
-      if (!(bpt&&bnHitsFit&&bdca&&beta)) continue;
+               if (!isTpcPion(trk)) continue;
+               float spiBeta = getTofBeta(trk, pVtx);
+               bool spiTofAvailable = !isnan(spiBeta) && spiBeta > 0;
+               bool tofSoftPion = spiTofAvailable ? isTofPion(trk, spiBeta, pVtx) : true;//this is bybrid pid, not always require tof
+               if (!tofSoftPion) continue;
+               StThreeVectorF spMom = trk->gMom(pVtx, picoDst->event()->bField());
 
-      if (kp->pt()/spMom.perp()>20 || kp->pt()/spMom.perp()<10) continue;
+               if (kp->pt()/spMom.perp()>20 || kp->pt()/spMom.perp()<10) continue;
+               StD0Pion* D0Pion = new StD0Pion(kp,*kaon , *pion, *trk, kp->kaonIdx(),kp->pionIdx(),iTrack,pVtx, picoDst->event()->bField());
+               if ((D0Pion->m()-kp->m())<0.1 || (D0Pion->m()-kp->m())>0.2) continue;  
+               bool unlikeDstar = pion->charge() * trk->charge() >0 ? true : false;
 
-      StD0Pion* D0Pion = new StD0Pion(kp,*kaon , *pion, *trk, kp->kaonIdx(),kp->pionIdx(),iTrack,pVtx, picoDst->event()->bField());
-     if ((D0Pion->m()-kp->m())<0.1 || (D0Pion->m()-kp->m())>0.2) continue;  
-     bool unlikeDstar = pion->charge() * trk->charge() >0 ? true : false;
-
-      //some cut condition and then add to the histogram
-      mHists->addD0Pion(D0Pion, kp, unlikeDstar);
-      mHists->addD0SoftPion(D0Pion,kp,unlikeDstar,centrality,reweight);
-      delete D0Pion;
-      }//end of iTrack loop
+//some cut condition and then add to the histogram
+               mHists->addD0Pion(D0Pion, kp, unlikeDstar);
+               mHists->addD0SoftPion(D0Pion,kp,unlikeDstar,centrality,reweight);
+               delete D0Pion;
+          }//end of iTrack loop
 
 
 //D0
@@ -339,6 +330,18 @@ bool StPicoDstarAnaMaker::isGoodTrack(StPicoTrack const* const trk, StThreeVecto
    return mom.perp() > anaCuts::minPt &&
           trk->nHitsFit() >= anaCuts::nHitsFit &&
           fabs(mom.pseudoRapidity()) <= anaCuts::Eta;
+}
+//----------------------------------------------------------------------------
+bool StPicoDstarAnaMaker::isGoodSoftPionTrack(StPicoTrack const* const trk, StThreeVectorF const& vtx) const
+{
+   StThreeVectorF mom = trk->gMom(vtx, mPicoDstMaker->picoDst()->event()->bField());
+   bool bnHistsFit = trk->nHitsFit() >= anaCuts::nHitsFit;
+   bool bPt = mom.perp()>anaCuts::ptSoftPion_min;
+   float spDca = float((trk->helix()).geometricSignedDistance(vtx));
+   bool bDca =std::fabs(spDca)<=anaCuts::DcaSoftPion;
+   bool bEta = std::fabs(mom.pseudoRapidity())<=anaCuts::Eta;
+
+   return bnHistsFit && bPt && bDca && bEta;
 }
 //-----------------------------------------------------------------------------
 bool StPicoDstarAnaMaker::isTpcPion(StPicoTrack const* const trk) const
@@ -467,7 +470,6 @@ bool StPicoDstarAnaMaker::isGoodSoftPion(StPicoTrack const* const  trk, StThreeV
 {
       //pt cut
       bool pt = trk->gPt()<anaCuts::ptSoftPion_max && trk->gPt()>anaCuts::ptSoftPion_min;
-      bool nHitsFit = trk->nHitsFit()>anaCuts::nHitsFit;
       bool dca = (trk->helix()).geometricSignedDistance(pVtx)<anaCuts::DcaSoftPion;
       
       return nHitsFit && pt && dca;

@@ -52,6 +52,7 @@ private:
     bool isGoodEvent(StPicoEvent const*, StThreeVectorF const& vtx) const;
     bool isGoodQaTrack(StPicoTrack const* ,StThreeVectorF const& momentum ,double dca) const;
     bool isGoodTrack(StPicoTrack const*, StThreeVectorF const&) const;
+    bool isGoodSoftPionTrack(StPicoTrack const*, StThreeVectorF const&) const;
     bool isTpcPion(StPicoTrack const*) const;
     bool isTpcKaon(StPicoTrack const*) const;
     bool isTpcProton(StPicoTrack const*) const;
@@ -63,7 +64,6 @@ private:
     float getTofBeta(StPicoTrack const*,StThreeVectorF const& vtx) const;
     int trkHalf(StPicoTrack const*, StThreeVectorF const& vtx) const;
     bool isGoodD0(StKaonPion const*) const;
-//    bool isGoodSoftPion(StPicoTrack const* , StThreeVectorF const& pVtx) const;
    StPicoDstMaker* mPicoDstMaker;
    StPicoD0Event* mPicoD0Event;
    StRefMultCorr* mGRefMultCorrUtil;

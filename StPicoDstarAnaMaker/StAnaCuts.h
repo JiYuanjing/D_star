@@ -177,7 +177,7 @@ float const mD0_min=1.82;
 float const cosThetaStar=0.8;
 float const ptD0_min=7;
 float const ptSoftPion_max=20;
-float const ptSoftPion_min=0.15;
+float const ptSoftPion_min=0.2;
 float const DcaSoftPion=1;
 }
 #endif
