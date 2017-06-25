@@ -40,6 +40,8 @@ class StPicoDstarAnaHists
 //   void addD0Pion(StD0Pion const*, bool unlike, bool tpc, bool tof, int centrality, const double reweight);
 void addD0Pion(StD0Pion const*, StKaonPion const* const kp, bool unlike); 
 void addD0SoftPion(StD0Pion const* const d0p, StKaonPion const* const kp, bool unlike,  int centrality, const double reweight);
+void addSideBandBackground(StD0Pion const* const d0p, StKaonPion const* const k, int centrality, const double reweight);
+
 //
    void addBackground(StKaonPion const*, StPicoTrack const* kaon, StPicoTrack const* pion, int ptBin, bool SB);
    void addTpcDenom1(bool IsPion, bool IsKaon, bool IsProton, float pt, int centrality, float Eta, float Phi, float Vz, float ZdcX);
@@ -123,12 +125,14 @@ private:
    TNtuple* mNtDstarBackgroungSameSign[anaCuts::nPtBins];
    TNtuple* mNtDstarBackgroungSideBand[anaCuts::nPtBins];
 //Dstar
-  TH2F* mh2InvariantMassVsPtDstar; 
-  TH2F* mh2InvariantMassVsPtLikeDstar;
+   TH2F* mh2InvariantMassVsPtDstar; 
+   TH2F* mh2InvariantMassVsPtSBDstar; 
+   TH2F* mh2InvariantMassVsPtLikeDstar;
    TH3F* mh3InvariantMassVsPtVsCentDstar;
+   TH3F* mh3InvariantMassVsPtVsCentSBDstar;
    TH3F* mh3InvariantMassVsPtVsCentLikeDstar;
- TH1F* deltaM;
- TH1F* deltaMlike;
+   TH1F* deltaM;
+   TH1F* deltaMlike;
 };
 
 #endif

@@ -234,7 +234,7 @@ Int_t StPicoDstarAnaMaker::Make()
 
 //several judgement condition//
 //PID(not require tof match), idx^_^, charge(K+pi-pi- or K-pi+pi+), the pt of softpion, dca, pt(D0)/pt(Dstar) //
-            if (!isGoodD0(kp)) continue;
+            if (!isGoodD0(kp) && !isD0SideBand(kp->m())) continue;
 //add softpion loop to reconstruct Dstar//
             for (unsigned short iTrack = 0; iTrack<nTracks; ++iTrack)
           {
@@ -254,12 +254,18 @@ Int_t StPicoDstarAnaMaker::Make()
 
                if (kp->pt()/spMom.perp()>20 || kp->pt()/spMom.perp()<10) continue;
                StD0Pion* D0Pion = new StD0Pion(kp,*kaon , *pion, *trk, kp->kaonIdx(),kp->pionIdx(),iTrack,pVtx, picoDst->event()->bField());
-               if ((D0Pion->m()-kp->m())<0.1 || (D0Pion->m()-kp->m())>0.2) continue;  
                bool unlikeDstar = pion->charge() * trk->charge() >0 ? true : false;
 
+               if (isGoodD0(kp))     {             
+               if ((D0Pion->m()-kp->m())<0.1 || (D0Pion->m()-kp->m())>0.2) continue;  
 //some cut condition and then add to the histogram
                mHists->addD0Pion(D0Pion, kp, unlikeDstar);
                mHists->addD0SoftPion(D0Pion,kp,unlikeDstar,centrality,reweight);
+                  }
+                else if (isD0SideBand(kp->m())&&unlikeDstar) 
+               {
+               mHists->addSideBandBackground(D0Pion,kp,centrality,reweight);
+               }
                delete D0Pion;
           }//end of iTrack loop
 
@@ -276,7 +282,7 @@ Int_t StPicoDstarAnaMaker::Make()
                {
                   if (kp->m() > anaCuts::likeSignMassRange.first && kp->m() < anaCuts::likeSignMassRange.second) mHists->addBackground(kp, kaon, pion, ptBin, false);
                }
-               else if (isSideBand(kp->m()))
+               else if (isD0SideBand(kp->m()))
                {
                   mHists->addBackground(kp, kaon, pion, ptBin, true);
                }
@@ -370,12 +376,11 @@ bool StPicoDstarAnaMaker::isGoodPair(StKaonPion const* const kp) const
           ((kp->decayLength()) * sin(kp->pointingAngle())) < anaCuts::dcaV0ToPv[tmpIndex];
 }
 //-----------------------------------------------------------------------------
-bool StPicoDstarAnaMaker::isSideBand(float const m) const
+bool StPicoDstarAnaMaker::isD0SideBand(float const m) const
 {
    if (m > anaCuts::sideBandMassRange0.first && m < anaCuts::sideBandMassRange0.second) return true;
-   if (m > anaCuts::sideBandMassRange1.first && m < anaCuts::sideBandMassRange1.second) return true;
-
-   return false;
+   else if (m > anaCuts::sideBandMassRange1.first && m < anaCuts::sideBandMassRange1.second) return true;
+   else return false;
 }
 //-----------------------------------------------------------------------------
 bool StPicoDstarAnaMaker::isTofKaon(StPicoTrack const* const trk, float beta, StThreeVectorF const& vtx) const
