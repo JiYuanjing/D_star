@@ -255,17 +255,10 @@ Int_t StPicoDstarAnaMaker::Make()
                if (kp->pt()/spMom.perp()>20 || kp->pt()/spMom.perp()<10) continue;
                StD0Pion* D0Pion = new StD0Pion(kp,*kaon , *pion, *trk, kp->kaonIdx(),kp->pionIdx(),iTrack,pVtx, picoDst->event()->bField());
                bool unlikeDstar = pion->charge() * trk->charge() >0 ? true : false;
-
-               if (isGoodD0(kp))     {             
                if ((D0Pion->m()-kp->m())<0.1 || (D0Pion->m()-kp->m())>0.2) continue;  
-//some cut condition and then add to the histogram
-               mHists->addD0Pion(D0Pion, kp, unlikeDstar);
-               mHists->addD0SoftPion(D0Pion,kp,unlikeDstar,centrality,reweight);
-                  }
+               if (isGoodD0(kp)) mHists->addD0SoftPion(D0Pion,kp,unlikeDstar,centrality,reweight);
                 else if (isD0SideBand(kp->m())&&unlikeDstar) 
-               {
                mHists->addSideBandBackground(D0Pion,kp,centrality,reweight);
-               }
                delete D0Pion;
           }//end of iTrack loop
 
