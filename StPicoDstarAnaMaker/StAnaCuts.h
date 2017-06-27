@@ -174,7 +174,7 @@ namespace anaCuts
    // };
 //------------------------------------------------------------
 //D_star cut 
-float const mD0_max=1.91;
+float const mD0_max=1.90;
 float const mD0_min=1.82;
 float const cosThetaStar=0.8;
 float const ptD0_min=7;

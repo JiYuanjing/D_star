@@ -381,7 +381,11 @@ void StPicoDstarAnaHists::addD0SoftPion(StD0Pion const* const d0p, StKaonPion co
    {
       mh2InvariantMassVsPtDstar->Fill(d0p->pt(), d0p->m()-kp->m(), reweight);
       mh3InvariantMassVsPtVsCentDstar->Fill(d0p->pt(), centrality, d0p->m()-kp->m(), reweight);
+//to check if the D0 mass range is right;
+      mh2InvariantMassVsPt->Fill(kp->pt(), kp->m(), reweight);
    }
+
+
    else
    {
       mh2InvariantMassVsPtLikeDstar->Fill(d0p->pt(), d0p->m()-kp->m(), reweight);

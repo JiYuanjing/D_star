@@ -234,7 +234,7 @@ Int_t StPicoDstarAnaMaker::Make()
 
 //several judgement condition//
 //PID(not require tof match), idx^_^, charge(K+pi-pi- or K-pi+pi+), the pt of softpion, dca, pt(D0)/pt(Dstar) //
-            if (!isGoodD0(kp) && !isD0SideBand(kp->m())) continue;
+            if (!(isGoodD0(kp) || isD0SideBand(kp->m()))) continue;
 //add softpion loop to reconstruct Dstar//
             for (unsigned short iTrack = 0; iTrack<nTracks; ++iTrack)
           {
@@ -257,7 +257,7 @@ Int_t StPicoDstarAnaMaker::Make()
                bool unlikeDstar = pion->charge() * trk->charge() >0 ? true : false;
                if ((D0Pion->m()-kp->m())<0.1 || (D0Pion->m()-kp->m())>0.2) continue;  
                if (isGoodD0(kp)) mHists->addD0SoftPion(D0Pion,kp,unlikeDstar,centrality,reweight);
-                else if (isD0SideBand(kp->m())&&unlikeDstar) 
+               if (isD0SideBand(kp->m())) 
                mHists->addSideBandBackground(D0Pion,kp,centrality,reweight);
                delete D0Pion;
           }//end of iTrack loop
@@ -370,11 +370,16 @@ bool StPicoDstarAnaMaker::isGoodPair(StKaonPion const* const kp) const
 }
 //-----------------------------------------------------------------------------
 bool StPicoDstarAnaMaker::isD0SideBand(float const m) const
-{
-   if (m > anaCuts::sideBandMassRange0.first && m < anaCuts::sideBandMassRange0.second) return true;
-   else if (m > anaCuts::sideBandMassRange1.first && m < anaCuts::sideBandMassRange1.second) return true;
+{/*
+   if ( (m > anaCuts::sideBandMassRange0.first && m < anaCuts::sideBandMassRange0.second) ||
+    (m > anaCuts::sideBandMassRange1.first && m < anaCuts::sideBandMassRange1.second)) return true;
    else return false;
-}
+*/
+  bool sideband=false;
+  if (m<1.8 && m>1.72 ) sideband=true;
+  if (m>1.92 && m<2.02) sideband = true;
+    return sideband;
+   }
 //-----------------------------------------------------------------------------
 bool StPicoDstarAnaMaker::isTofKaon(StPicoTrack const* const trk, float beta, StThreeVectorF const& vtx) const
 {
@@ -463,13 +468,3 @@ bool StPicoDstarAnaMaker::isGoodD0(StKaonPion const* const kp) const
 //           bool pt = (kp->pt()>anaCuts::ptD0_min);
            return mass; // && thetastar && pt;
 }
-/*
-bool StPicoDstarAnaMaker::isGoodSoftPion(StPicoTrack const* const  trk, StThreeVectorF const& pVtx) const
-{
-      //pt cut
-      bool pt = trk->gPt()<anaCuts::ptSoftPion_max && trk->gPt()>anaCuts::ptSoftPion_min;
-      bool dca = (trk->helix()).geometricSignedDistance(pVtx)<anaCuts::DcaSoftPion;
-      
-      return nHitsFit && pt && dca;
-}
-*/
