@@ -30,7 +30,8 @@
 //-----------------------------------------------------------------------
 StPicoDstarAnaHists::StPicoDstarAnaHists(TString fileBaseName, bool fillQaHists, bool fillBackgroundTrees) : mFillQaHists(fillQaHists), mFillBackgroundTrees(fillBackgroundTrees),
    mPrescales(NULL), mOutFile(NULL), mh2InvariantMassVsPtDstar(NULL), mh2InvariantMassVsPtLikeDstar(NULL),mh2InvariantMassVsPt(NULL), mh2InvariantMassVsPtLike(NULL), mh2InvariantMassVsPtTof(NULL), mh2InvariantMassVsPtTofLike(NULL),
-   mh1Cent(NULL), mh1CentWg(NULL), mh1gRefmultCor(NULL), mh1gRefmultCorWg(NULL), mh2CentVz(NULL), mh2CentVzWg(NULL), mh3InvariantMassVsPtVsCentDstar(NULL), mh3InvariantMassVsPtVsCentLikeDstar(NULL), mh3InvariantMassVsPtVsCent(NULL), mh3InvariantMassVsPtVsCentLike(NULL), mh3InvariantMassVsPtVsCentTof(NULL), mh3InvariantMassVsPtVsCentTofLike(NULL),  mh3InvariantMassVsPtVsCentSBDstar(NULL),mh2InvariantMassVsPtSBDstar(NULL)
+   mh1Cent(NULL), mh1CentWg(NULL), mh1gRefmultCor(NULL), mh1gRefmultCorWg(NULL), mh2CentVz(NULL), mh2CentVzWg(NULL), mh3InvariantMassVsPtVsCentDstar(NULL), mh3InvariantMassVsPtVsCentLikeDstar(NULL), mh3InvariantMassVsPtVsCent(NULL), mh3InvariantMassVsPtVsCentLike(NULL), mh3InvariantMassVsPtVsCentTof(NULL), mh3InvariantMassVsPtVsCentTofLike(NULL), mh3InvariantMassVsPtVsCentSBDstar(NULL),mh2InvariantMassVsPtSBDstar(NULL),mh2InvariantMassVsPtDstarD0(NULL), mh2InvariantMassVsPtSBD0(NULL)
+
    // mh2Tpc1PtCent(NULL),  mh2Tpc1PhiVz(NULL), mh2HFT1PtCent(NULL),  mh2HFT1PhiVz(NULL),  mh3DcaXyPtCent(NULL), mh3DcaZPtCent(NULL),
 {
    mPrescales = new StPicoPrescales(anaCuts::prescalesFilesDirectoryName);
@@ -66,12 +67,11 @@ StPicoDstarAnaHists::StPicoDstarAnaHists(TString fileBaseName, bool fillQaHists,
       }
    }
 
-
    int nRuns = mPrescales->numberOfRuns();
    TH1::SetDefaultSumw2();
    mh1TotalEventsInRun         = new TH1F("mh1TotalEventsInRun", "totalEventsInRun;runIndex;totalEventsInRun", nRuns + 1, 0, nRuns + 1);
    mh1TotalEventsInRunBeforeCut = new TH1F("mh1TotalEventsInRunBeforeCut", "totalEventsInRun;runIndex;totalEventsInRun", nRuns + 1, 0, nRuns + 1);
-  mh2InvariantMassVsPt        = new TH2F("mh2InvariantMassVsPt", "invariantMassVsPt;p_{T}(K#pi)(GeV/c);m_{K#pi}(GeV/c^{2})", 120, 0, 12, 50, 1.6, 2.1);
+   mh2InvariantMassVsPt        = new TH2F("mh2InvariantMassVsPt", "invariantMassVsPt;p_{T}(K#pi)(GeV/c);m_{K#pi}(GeV/c^{2})", 120, 0, 12, 50, 1.6, 2.1);
    mh2InvariantMassVsPtLike    = new TH2F("mh2InvariantMassVsPtLike", "invariantMassVsPtLike;p_{T}(K#pi)(GeV/c);m_{K#pi}(GeV/c^{2})", 120, 0, 12, 50, 1.6, 2.1);
    mh2InvariantMassVsPtTof     = new TH2F("mh2InvariantMassVsPtTof", "invariantMassVsPtTof;p_{T}(K#pi)(GeV/c);m_{K#pi}(GeV/c^{2})", 120, 0, 12, 50, 1.6, 2.1);
    mh2InvariantMassVsPtTofLike = new TH2F("mh2InvariantMassVsPtTofLike", "invariantMassVsPtTofLike;p_{T}(K#pi)(GeV/c);m_{K#pi}(GeV/c^{2})", 120, 0, 12, 50, 1.6, 2.1);
@@ -96,6 +96,8 @@ StPicoDstarAnaHists::StPicoDstarAnaHists(TString fileBaseName, bool fillQaHists,
    mh2InvariantMassVsPtSBDstar    = new TH2F("mh2InvariantMassVsPtSBDstar", "invariantMassVsPtSB;p_{T}(K#pi#pi)(GeV/c);m_{K#pi#pi}-m_{K#pi}(GeV/c^{2})", 120, 0, 12, 90, 0.135, 0.18);
    mh3InvariantMassVsPtVsCentSBDstar    = new TH3F("mh3InvariantMassVsPtVsCentSBDstar", "invariantMassVsPtVsCentSB;p_{T}(K#pi#pi)(GeV/c);Cent;m_{K#pi}-m_{K#pi#pi}(GeV/c^{2})", 120, 0, 12, 10, -1.5, 8.5, 90, 0.135, 0.18);
 
+   mh2InvariantMassVsPtDstarD0  = new TH2F("mh2InvariantMassVsPtDstarD0", "invariantMassVsPt;p_{T}(K#pi)(GeV/c);m_{K#pi}(GeV/c^{2})", 120, 0, 12, 50, 1.6, 2.1);
+   mh2InvariantMassVsPtSBD0  = new TH2F("mh2InvariantMassVsPtSBD0", "invariantMassVsPt;p_{T}(K#pi)(GeV/c);m_{K#pi}(GeV/c^{2})", 120, 0, 12, 50, 1.6, 2.1);
    if(mFillBackgroundTrees)
    {
      TString var = "m:pt:decayLength:dca12:dcaV0ToPv:ptKaon:dcaKaon:ptPion:dcaPion";
@@ -382,10 +384,8 @@ void StPicoDstarAnaHists::addD0SoftPion(StD0Pion const* const d0p, StKaonPion co
       mh2InvariantMassVsPtDstar->Fill(d0p->pt(), d0p->m()-kp->m(), reweight);
       mh3InvariantMassVsPtVsCentDstar->Fill(d0p->pt(), centrality, d0p->m()-kp->m(), reweight);
 //to check if the D0 mass range is right;
-      mh2InvariantMassVsPt->Fill(kp->pt(), kp->m(), reweight);
+      mh2InvariantMassVsPtDstarD0->Fill(kp->pt(), kp->m(), reweight);
    }
-
-
    else
    {
       mh2InvariantMassVsPtLikeDstar->Fill(d0p->pt(), d0p->m()-kp->m(), reweight);
@@ -393,12 +393,16 @@ void StPicoDstarAnaHists::addD0SoftPion(StD0Pion const* const d0p, StKaonPion co
    }
  
 }
-void StPicoDstarAnaHists::addSideBandBackground(StD0Pion const* const d0p, StKaonPion const* const kp, int centrality, const double reweight)
+void StPicoDstarAnaHists::addSideBandBackground(StD0Pion const* const d0p, StKaonPion const* const kp,bool unlike, int centrality, const double reweight)
 {
-      mh2InvariantMassVsPtSBDstar->Fill(d0p->pt(), d0p->m()-kp->m(), reweight);
+      if (unlike){
+      mh2InvariantMassVsPtSBD0->Fill(kp->pt(), kp->m(), reweight);
+        mh2InvariantMassVsPtSBDstar->Fill(d0p->pt(), d0p->m()-kp->m(), reweight);
       mh3InvariantMassVsPtVsCentSBDstar->Fill(d0p->pt(), centrality, d0p->m()-kp->m(), reweight);
-   }
- 
+      }
+      
+      }
+
 
 
 void StPicoDstarAnaHists::closeFile()
@@ -425,10 +429,11 @@ void StPicoDstarAnaHists::closeFile()
    mh2InvariantMassVsPtDstar->Write();
    mh2InvariantMassVsPtSBDstar->Write();
    mh2InvariantMassVsPtLikeDstar->Write();
-    mh3InvariantMassVsPtVsCentDstar->Write();
-    mh3InvariantMassVsPtVsCentSBDstar->Write();
+   mh3InvariantMassVsPtVsCentDstar->Write();
+   mh3InvariantMassVsPtVsCentSBDstar->Write();
    mh3InvariantMassVsPtVsCentLikeDstar->Write();
-
+   mh2InvariantMassVsPtSBD0->Write();
+   mh2InvariantMassVsPtDstarD0->Write();
    if(mFillBackgroundTrees)
    {
      for(unsigned int iNt=0; iNt<anaCuts::nPtBins; ++iNt)

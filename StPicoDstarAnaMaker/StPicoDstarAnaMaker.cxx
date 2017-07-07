@@ -226,11 +226,28 @@ Int_t StPicoDstarAnaMaker::Make()
             bool tofKaon = kTofAvailable ? isTofKaon(kaon, kBeta, pVtx) : true;//this is bybrid pid, not always require tof
             bool tof = tofPion && tofKaon;
 
+            bool D0unlike = kaon->charge() * pion->charge() < 0 ? true : false;
+//D0
+   if (goodPair) mHists->addKaonPion(kp, D0unlike, true, tof, centrality, reweight);
+
+            if (mFillBackgroundTrees && tof)
+            {
+               if (centrality < 0) continue;
+               int const ptBin = getD0PtIndex(kp);
+
+               if (D0unlike)
+               {
+                  if (kp->m() > anaCuts::likeSignMassRange.first && kp->m() < anaCuts::likeSignMassRange.second) mHists->addBackground(kp, kaon, pion, ptBin, false);
+               }
+               else if (isD0SideBand(kp->m()))
+               {
+                  mHists->addBackground(kp, kaon, pion, ptBin, true);
+               }
+            }
+     //Dstar 
             if (!tof) continue;
             if (!goodPair) continue;
-            bool D0unlike = kaon->charge() * pion->charge() < 0 ? true : false;
             if (!D0unlike) continue;
-
 
 //several judgement condition//
 //PID(not require tof match), idx^_^, charge(K+pi-pi- or K-pi+pi+), the pt of softpion, dca, pt(D0)/pt(Dstar) //
@@ -252,35 +269,15 @@ Int_t StPicoDstarAnaMaker::Make()
                if (!tofSoftPion) continue;
                StThreeVectorF spMom = trk->gMom(pVtx, picoDst->event()->bField());
 
-               if (kp->pt()/spMom.perp()>20 || kp->pt()/spMom.perp()<10) continue;
+               if (kp->pt()/spMom.perp()>20 || kp->pt()/spMom.perp()<7) continue;
                StD0Pion* D0Pion = new StD0Pion(kp,*kaon , *pion, *trk, kp->kaonIdx(),kp->pionIdx(),iTrack,pVtx, picoDst->event()->bField());
                bool unlikeDstar = pion->charge() * trk->charge() >0 ? true : false;
                if ((D0Pion->m()-kp->m())<0.1 || (D0Pion->m()-kp->m())>0.2) continue;  
                if (isGoodD0(kp)) mHists->addD0SoftPion(D0Pion,kp,unlikeDstar,centrality,reweight);
                if (isD0SideBand(kp->m())) 
-               mHists->addSideBandBackground(D0Pion,kp,centrality,reweight);
+               mHists->addSideBandBackground(D0Pion,kp,unlikeDstar,centrality,reweight);
                delete D0Pion;
           }//end of iTrack loop
-
-
-//D0
-//   if (goodPair) mHists->addKaonPion(kp, D0unlike, true, tof, centrality, reweight);
-/*
-            if (mFillBackgroundTrees && tof)
-            {
-               if (centrality < 0) continue;
-               int const ptBin = getD0PtIndex(kp);
-
-               if (D0unlike)
-               {
-                  if (kp->m() > anaCuts::likeSignMassRange.first && kp->m() < anaCuts::likeSignMassRange.second) mHists->addBackground(kp, kaon, pion, ptBin, false);
-               }
-               else if (isD0SideBand(kp->m()))
-               {
-                  mHists->addBackground(kp, kaon, pion, ptBin, true);
-               }
-            }
-  */   
          } // end of kaonPion loop
       } // end of isGoodEvent
    } // end of isGoodTrigger
@@ -370,14 +367,10 @@ bool StPicoDstarAnaMaker::isGoodPair(StKaonPion const* const kp) const
 }
 //-----------------------------------------------------------------------------
 bool StPicoDstarAnaMaker::isD0SideBand(float const m) const
-{/*
-   if ( (m > anaCuts::sideBandMassRange0.first && m < anaCuts::sideBandMassRange0.second) ||
-    (m > anaCuts::sideBandMassRange1.first && m < anaCuts::sideBandMassRange1.second)) return true;
-   else return false;
-*/
+{
   bool sideband=false;
-  if (m<1.8 && m>1.72 ) sideband=true;
-  if (m>1.92 && m<2.02) sideband = true;
+  if (m< anaCuts::sideBandMassRange0.first&& m> anaCuts::sideBandMassRange0.second) sideband=true;
+  if (m> anaCuts::sideBandMassRange0.first&& m<anaCuts::sideBandMassRange0.second) sideband = true;
     return sideband;
    }
 //-----------------------------------------------------------------------------

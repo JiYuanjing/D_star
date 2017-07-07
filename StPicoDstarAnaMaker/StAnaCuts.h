@@ -71,17 +71,16 @@ namespace anaCuts
    // Background Trees Mass Ranges
    std::pair<float, float> const sideBandMassRange0
    {
-      //1.7535, 1.8085
-      1.74, 1.81
+     //choose 4 sigma to 9 sigma
+      1.716, 1.80
    };
    std::pair<float, float> const sideBandMassRange1
    {
-    //  1.9185, 1.9635
-      1.92,1.99
+      1.93,2.01
    };
    std::pair<float, float> const likeSignMassRange
    {
-      1.82, 1.91
+      1.82, 1.90
    };
 
    //D0 candidate cut// Ultimate1
@@ -175,11 +174,11 @@ namespace anaCuts
 //------------------------------------------------------------
 //D_star cut 
 float const mD0_max=1.90;
-float const mD0_min=1.82;
+float const mD0_min=1.83;
 float const cosThetaStar=0.8;
 float const ptD0_min=7;
 float const ptSoftPion_max=20;
-float const ptSoftPion_min=0.2;
+float const ptSoftPion_min=0.15;
 float const DcaSoftPion=1;
 }
 #endif

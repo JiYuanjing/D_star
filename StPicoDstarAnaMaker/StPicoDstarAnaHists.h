@@ -39,7 +39,7 @@ class StPicoDstarAnaHists
    //
 //   void addD0Pion(StD0Pion const*, bool unlike, bool tpc, bool tof, int centrality, const double reweight);
 void addD0SoftPion(StD0Pion const* const d0p, StKaonPion const* const kp, bool unlike,  int centrality, const double reweight);
-void addSideBandBackground(StD0Pion const* const d0p, StKaonPion const* const k, int centrality, const double reweight);
+void addSideBandBackground(StD0Pion const* const d0p, StKaonPion const* const k,bool unlike, int centrality, const double reweight);
 
 //
    void addBackground(StKaonPion const*, StPicoTrack const* kaon, StPicoTrack const* pion, int ptBin, bool SB);
@@ -130,6 +130,9 @@ private:
    TH3F* mh3InvariantMassVsPtVsCentDstar;
    TH3F* mh3InvariantMassVsPtVsCentSBDstar;
    TH3F* mh3InvariantMassVsPtVsCentLikeDstar;
+   TH2F* mh2InvariantMassVsPtDstarD0;
+   TH2F* mh2InvariantMassVsPtSBD0;
+
 };
 
 #endif
